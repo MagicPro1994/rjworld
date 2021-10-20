@@ -1,18 +1,17 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />
+    <locale-switcher />
+    <p>{{ $t("main.welcome", { username: "Red J" }) }}</p>
   </div>
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
-import HelloWorld from "@/components/HelloWorld.vue"; // @ is an alias to /src
+import LocaleSwitcher from "@/components/LocaleSwitcher.vue";
+import { defineComponent } from "vue";
 
-@Options({
+export default defineComponent({
   components: {
-    HelloWorld,
+    "locale-switcher": LocaleSwitcher,
   },
-})
-export default class Home extends Vue {}
+});
 </script>

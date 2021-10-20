@@ -1,0 +1,12 @@
+{
+  "main": {
+    "welcome": "Hello {username}"
+  },
+  "about": {
+    "welcome": "Hello"
+  },
+  "menu": {
+    "home": "Home",
+    "about": "About"
+  }
+}

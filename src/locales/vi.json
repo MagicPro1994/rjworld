@@ -1,0 +1,12 @@
+{
+  "main": {
+    "welcome": "Xin chào {username}!"
+  },
+  "about": {
+    "welcome": "Chào"
+  },
+  "menu": {
+    "home": "Trang chủ",
+    "about": "Về RJ"
+  }
+}

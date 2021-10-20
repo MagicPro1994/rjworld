@@ -1,11 +1,8 @@
+// eslint-disable-next-line
 const colors = require("tailwindcss/colors");
 
 module.exports = {
-  purge: [
-    "./public/**/*.html",
-    "./src/**/*.vue",
-    "./src/**/*.scss"
-  ],
+  purge: ["./public/**/*.html", "./src/**/*.vue", "./src/**/*.scss"],
   presets: [],
   darkMode: false, // or 'media' or 'class'
   theme: {
