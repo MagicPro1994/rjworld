@@ -1,14 +1,27 @@
 <template>
   <div id="nav">
-    <router-link :to="{ name: 'Home', params: { locale: this.$i18n.locale } }">
+    <router-link :to="injectI18NParam({ name: 'Home' })">
       {{ $t("menu.home") }}
     </router-link>
-    <router-link :to="{ name: 'About', params: { locale: this.$i18n.locale } }">
+    <router-link :to="injectI18NParam({ name: 'About' })">
       {{ $t("menu.about") }}
     </router-link>
   </div>
   <router-view />
 </template>
+
+<script lang="ts">
+import { defineComponent } from "vue";
+import { i18nHelper } from "./plugins/I18NHelper";
+
+export default defineComponent({
+  methods: {
+    injectI18NParam(to: Location) {
+      return i18nHelper.injectI18NParam(to);
+    },
+  },
+});
+</script>
 
 <style lang="scss">
 #app {

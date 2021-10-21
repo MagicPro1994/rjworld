@@ -24,16 +24,6 @@ const routes: Array<RouteRecordRaw> = [
       },
     ],
   },
-  // {
-  //   path: "/",
-  //   name: "Home",
-  //   component: loadView("Home"),
-  // },
-  // {
-  //   path: "/about",
-  //   name: "About",
-  //   component: loadView("About"),
-  // },
 ];
 
 const router = createRouter({
@@ -47,9 +37,12 @@ router.beforeEach(async (to, from, next) => {
     ? to.params.locale
     : to.params.locale[0];
 
-  // use default locale if param locale is not in SUPPORT_LOCALES
+  // use user preferred locale if route link locale is not supported
   if (!i18nHelper.isLocaleSupported(locale)) {
-    return next(i18nHelper.defaultLocale);
+    const location = Object.assign({}, to, {
+      params: { locale: i18nHelper.userPreferredLocale },
+    });
+    return next(location);
   }
 
   i18nHelper.changeLocale(locale);

@@ -1,6 +1,8 @@
-import { i18n } from "@/i18n";
+
+import axios from "axios";
 import { nextTick } from "vue";
 import { Composer, I18n, VueI18n } from "vue-i18n";
+import { i18n } from "@/i18n";
 
 type I18nDefault = I18n<unknown, unknown, unknown, false | true>;
 
@@ -48,7 +50,7 @@ class I18NHelper {
   private setI18nLanguage(locale: string) {
     this.currentLocale = locale;
     // Specify the language setting for headers
-    // axios.defaults.headers.common['Accept-Language'] = locale
+    axios.defaults.headers.common["Accept-Language"] = locale;
     document.querySelector("html")?.setAttribute("lang", locale);
   }
 
@@ -76,6 +78,25 @@ class I18NHelper {
       await this.loadLocaleMessages(locale);
     }
     this.setI18nLanguage(locale);
+  }
+
+  public injectI18NParam(to: Location): Location {
+    return Object.assign({ params: { locale: this.currentLocale } }, to);
+  }
+
+  public get userPreferredLocale(): string {
+    const userLocale = window.navigator.language || this.defaultLocale;
+    const userLocaleShort = userLocale.split("-")[0];
+    // Try to use the language code
+    if (this.isLocaleSupported(userLocale)) {
+      return userLocale;
+    }
+    // Try to use first part of the language code
+    if (this.isLocaleSupported(userLocaleShort)) {
+      return userLocaleShort;
+    }
+    // If user preferred locale is not supported, change to default locale
+    return this.defaultLocale;
   }
 }
 
