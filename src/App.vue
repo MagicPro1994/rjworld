@@ -45,7 +45,7 @@ export default defineComponent({
       refreshing: false,
       registration: null as null | ServiceWorkerRegistration,
       updateExists: false,
-      showModal: true,
+      showModal: false,
     };
   },
   created() {
