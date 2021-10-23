@@ -1,58 +1,80 @@
 <template>
-  <div id="nav">
-    <router-link :to="buildToLink('Home')">
-      {{ $t("menu.home") }}
-    </router-link>
-    <router-link :to="buildToLink('About')">
-      {{ $t("menu.about") }}
-    </router-link>
-  </div>
-  <router-view />
+  <Header />
+  <main>
+    <Modal v-if="showModal">
+      <template v-slot:header>
+        <span class="font-semibold"> {{ $t("app.new_version.header") }}</span>
+      </template>
+      <template v-slot:body>
+        <span v-html="$t('app.new_version.message')"> </span>
+      </template>
+      <template v-slot:footer>
+        <button
+          class="modal__button modal__button--uncommon"
+          @click="showModal = false"
+        >
+          {{ $t("modal.cancel") }}
+        </button>
+        <button
+          class="modal__button modal__button--recommend"
+          @click="refreshApp()"
+        >
+          {{ $t("modal.update") }}
+        </button>
+      </template>
+    </Modal>
+    <router-view />
+  </main>
+  <Footer />
 </template>
 
 <script lang="ts">
+import Header from "@/components/common/Header.vue";
+import Footer from "@/components/common/Footer.vue";
+import Modal from "@/components/common/Modal.vue";
 import { defineComponent } from "vue";
-import { i18nHelper } from "./plugins/I18NHelper";
 
 export default defineComponent({
+  components: {
+    Header,
+    Footer,
+    Modal,
+  },
   data() {
     return {
-      currentLocale: i18nHelper.currentLocale,
+      refreshing: false,
+      registration: null as null | ServiceWorkerRegistration,
+      updateExists: false,
+      showModal: true,
     };
   },
+  created() {
+    document.addEventListener("swUpdated", this.showRefreshUI, { once: true });
+    if (navigator.serviceWorker) {
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        if (this.refreshing) return;
+        this.refreshing = true;
+        window.location.reload();
+      });
+    }
+  },
   methods: {
-    buildToLink(routeName: string, options = {}) {
-      const toObj = {
-        name: routeName,
-        params: {
-          locale: this.$store.state.lang,
-        },
-      };
-      return Object.assign({}, toObj, options);
+    showRefreshUI(e: Event) {
+      this.registration = (e as CustomEvent<ServiceWorkerRegistration>).detail;
+      this.updateExists = true;
+    },
+    refreshApp() {
+      this.updateExists = false;
+      this.showModal = false;
+      if (!this.registration || !this.registration.waiting) {
+        return;
+      }
+      this.registration.waiting.postMessage({
+        type: "SKIP_WAITING",
+      });
     },
   },
 });
 </script>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
-}
-</style>
+<style lang="scss" src="@/assets/styles/main.scss" />
