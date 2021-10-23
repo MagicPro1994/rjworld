@@ -1,0 +1,41 @@
+/*! @import */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  a {
+    @apply text-pure-purple;
+    @apply font-semibold;
+  }
+
+  select:focus,
+  button:focus {
+    @apply outline-none;
+    @apply ring-1;
+    @apply ring-teal-600;
+  }
+}
+
+@layer utilities {
+  .scroll-snap-none {
+    scroll-snap-type: none;
+  }
+
+  .scroll-snap-x {
+    scroll-snap-type: x;
+  }
+
+  .scroll-snap-y {
+    scroll-snap-type: y;
+  }
+
+  .text-center-last {
+    text-align-last: center;
+  }
+
+  .m-0-auto {
+    margin: 0 auto;
+  }
+}
+

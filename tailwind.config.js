@@ -16,10 +16,20 @@ module.exports = {
     colors: {
       transparent: "transparent",
       current: "currentColor",
-
+      primary: "#DE354C", // Bright Red
+      secondary: "#932432", // Deep Red
+      "pure-purple": "#3C1874",
+      "tinged-gray": "#283747",
+      "1-star": "#72778b",
+      "2-star": "#2a8f72",
+      "3-star": "#517fcb",
+      "4-star": "#a256e1",
+      "5-star": "#bd6932",
+      cloud: "#F3F3F3",
       black: colors.black,
       white: colors.white,
       gray: colors.coolGray,
+      grey: colors.gray,
       red: colors.red,
       yellow: colors.amber,
       green: colors.emerald,
@@ -27,6 +37,7 @@ module.exports = {
       indigo: colors.indigo,
       purple: colors.violet,
       pink: colors.pink,
+      teal: colors.teal,
     },
     spacing: {
       px: "1px",
@@ -562,6 +573,14 @@ module.exports = {
       full: "100%",
       min: "min-content",
       max: "max-content",
+      "1/6": "16.66%",
+      "1/5": "20%",
+      "1/4": "25%",
+      "1/3": "33.33%",
+      "2/5": "40%",
+      "1/2": "50%",
+      "3/4": "75%",
+      full: "100%"
     },
     objectPosition: {
       bottom: "bottom",

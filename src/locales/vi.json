@@ -8,5 +8,15 @@
   "menu": {
     "home": "Trang chủ",
     "about": "Về RJ"
+  },
+  "app": {
+    "new_version": {
+      "header": "Phiên bản ứng dụng mới",
+      "message": "Có một phiên bản ứng dụng mới. Bạn có muốn cập nhật không?"
+    }
+  },
+  "modal": {
+    "cancel": "Hủy bỏ",
+    "update": "Cập nhật"
   }
 }

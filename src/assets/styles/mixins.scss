@@ -1,0 +1,15 @@
+@mixin default-transition {
+  transition: all 0.3s ease;
+}
+
+@mixin margin-auto-center {
+  @apply my-0 mx-auto;
+}
+
+@mixin default-text-semibold {
+  @apply font-semibold uppercase text-center;
+}
+
+@mixin default-button {
+  @apply border rounded bg-teal-400 text-white border-teal-500;
+}

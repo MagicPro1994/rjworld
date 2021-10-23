@@ -8,5 +8,15 @@
   "menu": {
     "home": "Home",
     "about": "About"
+  },
+  "app": {
+    "new_version": {
+      "header": "New app version",
+      "message": "There is a new app version. Do you want to update?"
+    }
+  },
+  "modal": {
+    "cancel": "Cancel",
+    "update": "Update"
   }
 }
