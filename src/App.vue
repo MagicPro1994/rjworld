@@ -1,9 +1,9 @@
 <template>
   <div id="nav">
-    <router-link :to="injectI18NParam({ name: 'Home' })">
+    <router-link :to="buildToLink('Home')">
       {{ $t("menu.home") }}
     </router-link>
-    <router-link :to="injectI18NParam({ name: 'About' })">
+    <router-link :to="buildToLink('About')">
       {{ $t("menu.about") }}
     </router-link>
   </div>
@@ -15,9 +15,20 @@ import { defineComponent } from "vue";
 import { i18nHelper } from "./plugins/I18NHelper";
 
 export default defineComponent({
+  data() {
+    return {
+      currentLocale: i18nHelper.currentLocale,
+    };
+  },
   methods: {
-    injectI18NParam(to: Location) {
-      return i18nHelper.injectI18NParam(to);
+    buildToLink(routeName: string, options = {}) {
+      const toObj = {
+        name: routeName,
+        params: {
+          locale: this.$store.state.lang,
+        },
+      };
+      return Object.assign({}, toObj, options);
     },
   },
 });

@@ -5,25 +5,27 @@ function loadView(viewPath: string) {
   return () => import(`@/views/${viewPath}.vue`);
 }
 
+const routeList: Array<RouteRecordRaw> = [
+  {
+    path: "",
+    name: "Home",
+    component: loadView("Home"),
+  },
+  {
+    path: "about",
+    name: "About",
+    component: loadView("About"),
+  },
+];
+
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/:locale",
     component: {
       template: "<router-view></router-view>",
     },
-    children: [
-      {
-        path: "",
-        name: "Home",
-        component: loadView("Home"),
-      },
-      {
-        path: "about",
-        name: "About",
-        component: loadView("About"),
-      },
-    ],
-  },
+    children: routeList,
+  }
 ];
 
 const router = createRouter({
@@ -37,12 +39,10 @@ router.beforeEach(async (to, from, next) => {
     ? to.params.locale
     : to.params.locale[0];
 
+  console.log(to);
   // use user preferred locale if route link locale is not supported
   if (!i18nHelper.isLocaleSupported(locale)) {
-    const location = Object.assign({}, to, {
-      params: { locale: i18nHelper.userPreferredLocale },
-    });
-    return next(location);
+    return next(i18nHelper.userPreferredLocale);
   }
 
   i18nHelper.changeLocale(locale);

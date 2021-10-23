@@ -1,8 +1,8 @@
-
 import axios from "axios";
 import { nextTick } from "vue";
 import { Composer, I18n, VueI18n } from "vue-i18n";
 import { i18n } from "@/i18n";
+import store from "@/store";
 
 type I18nDefault = I18n<unknown, unknown, unknown, false | true>;
 
@@ -26,14 +26,14 @@ class I18NHelper {
     return process.env.VUE_APP_I18N_SUPPORTED_LOCALE_LIST.split(",");
   }
 
-  private get currentLocale(): string {
+  get currentLocale(): string {
     if (this.isLegacy) {
       return (this.i18nObj.global as VueI18n).locale;
     }
     return (this.i18nObj.global as Composer).locale.value;
   }
 
-  private set currentLocale(locale: string) {
+  set currentLocale(locale: string) {
     if (this.isLegacy) {
       (this.i18nObj.global as VueI18n).locale = locale;
     } else {
@@ -41,14 +41,16 @@ class I18NHelper {
     }
   }
 
-  constructor() {
+  public static getInstance() {
     if (!(this instanceof I18NHelper)) {
       return new I18NHelper();
     }
+    return this;
   }
 
   private setI18nLanguage(locale: string) {
     this.currentLocale = locale;
+    store.commit("changeLanguage");
     // Specify the language setting for headers
     axios.defaults.headers.common["Accept-Language"] = locale;
     document.querySelector("html")?.setAttribute("lang", locale);
@@ -80,10 +82,6 @@ class I18NHelper {
     this.setI18nLanguage(locale);
   }
 
-  public injectI18NParam(to: Location): Location {
-    return Object.assign({ params: { locale: this.currentLocale } }, to);
-  }
-
   public get userPreferredLocale(): string {
     const userLocale = window.navigator.language || this.defaultLocale;
     const userLocaleShort = userLocale.split("-")[0];
@@ -100,4 +98,4 @@ class I18NHelper {
   }
 }
 
-export const i18nHelper = new I18NHelper();
+export const i18nHelper = I18NHelper.getInstance();
