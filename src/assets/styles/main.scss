@@ -32,6 +32,36 @@ header {
   }
 }
 
+.nav {
+  @apply bg-tinged-gray py-2 md:px-4 lg:px-4 mt-0 w-full flex flex-wrap;
+  &__container {
+    @apply container mx-auto flex flex-wrap items-center justify-between;
+  }
+  &__logo-container {
+    @apply px-6 md:px-2 lg:px-2 xl:px-2 w-5/12 md:w-3/12 overflow-hidden;
+  }
+  &__menu-toggle {
+    @apply px-8 md:px-4 lg:hidden flex flex-row;
+  }
+  &__route-link-wrapper {
+    @apply w-full lg:w-auto lg:block mt-4 lg:mt-0;
+    &_inactive {
+      @apply hidden lg:block;
+    }
+  }
+  &__route-link-container {
+    @apply block lg:flex lg:flex-1;
+  }
+  &__route-link {
+    @apply block w-full py-2 px-4;
+  }
+}
+
+.footer {
+  @apply bg-tinged-gray w-full text-white text-center py-5 px-5 sm:px-0;
+
+}
+
 .side-bar {
   @apply bg-gray-800;
   height: $content-min-height;
@@ -149,6 +179,10 @@ select {
   background-repeat: no-repeat;
 }
 
+select, button {
+  @apply focus:ring-transparent;
+}
+
 input:focus-within~label,
 input:not(:placeholder-shown)~label {
   @apply transform;
@@ -158,4 +192,9 @@ input:not(:placeholder-shown)~label {
 
 input:focus-within~label {
   @apply text-blue-500;
+}
+
+/* SECTION: FONTAWESOME */
+.fa-white-teal {
+  @apply text-white hover:text-teal-500;
 }

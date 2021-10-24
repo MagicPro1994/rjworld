@@ -13,7 +13,8 @@
     "new_version": {
       "header": "New app version",
       "message": "There is a new app version. Do you want to update?"
-    }
+    },
+    "copyright": "&copy; 2021 Red J's World. All rights reserved."
   },
   "modal": {
     "cancel": "Cancel",

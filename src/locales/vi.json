@@ -13,7 +13,8 @@
     "new_version": {
       "header": "Phiên bản ứng dụng mới",
       "message": "Có một phiên bản ứng dụng mới. Bạn có muốn cập nhật không?"
-    }
+    },
+    "copyright": "&copy; 2021 Red J's World. Toàn quyền được bảo lưu."
   },
   "modal": {
     "cancel": "Hủy bỏ",
