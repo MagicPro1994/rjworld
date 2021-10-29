@@ -570,7 +570,7 @@ module.exports = {
     },
     minWidth: {
       0: "0px",
-      full: "100%",
+      32: "8rem",
       min: "min-content",
       max: "max-content",
       "1/6": "16.66%",
@@ -580,7 +580,7 @@ module.exports = {
       "2/5": "40%",
       "1/2": "50%",
       "3/4": "75%",
-      full: "100%"
+      full: "100%",
     },
     objectPosition: {
       bottom: "bottom",
@@ -769,6 +769,7 @@ module.exports = {
       opacity: "opacity",
       shadow: "box-shadow",
       transform: "transform",
+      width: "width",
     },
     transitionTimingFunction: {
       DEFAULT: "cubic-bezier(0.4, 0, 0.2, 1)",
@@ -1000,9 +1001,9 @@ module.exports = {
     ringOffsetWidth: ["responsive", "focus-within", "focus"],
     ringOpacity: ["responsive", "dark", "focus-within", "focus"],
     ringWidth: ["responsive", "focus-within", "focus"],
-    rotate: ["responsive", "hover", "focus"],
+    rotate: ["responsive", "hover", "focus", "group-hover"],
     saturate: ["responsive"],
-    scale: ["responsive", "hover", "focus"],
+    scale: ["responsive", "hover", "focus", "group-hover"],
     sepia: ["responsive"],
     skew: ["responsive", "hover", "focus"],
     space: ["responsive"],
@@ -1035,7 +1036,7 @@ module.exports = {
     ],
     textOverflow: ["responsive"],
     textTransform: ["responsive"],
-    transform: ["responsive"],
+    transform: ["responsive", "group-hover"],
     transformOrigin: ["responsive"],
     transitionDelay: ["responsive"],
     transitionDuration: ["responsive"],
