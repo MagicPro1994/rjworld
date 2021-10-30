@@ -106,14 +106,19 @@ foreach ($p_query_url as $q_key => $q_value) {
     $request_params[$q_key] = $q_value;
 }
 
-// csurl may exist in GET request methods
-if (is_array($request_params) && array_key_exists('csurl', $request_params)) {
-    unset($request_params['csurl']);
-}
-
-// cs_encode may exist in GET request methods
-if (is_array($request_params) && array_key_exists('cs_decode', $request_params)) {
-    unset($request_params['cs_decode']);
+if (is_array($request_params)) {
+    // csurl may exist in GET request methods
+    if (array_key_exists('csurl', $request_params)) {
+        unset($request_params['csurl']);
+    }
+    // cs_encode may exist in GET request methods
+    if (array_key_exists('cs_decode', $request_params)) {
+        unset($request_params['cs_decode']);
+    }
+    // cs_cookie may exist in GET request methods
+    if (array_key_exists('cs_cookie', $request_params)) {
+        unset($request_params['cs_cookie']);
+    }
 }
 
 // ignore requests for proxy :)
