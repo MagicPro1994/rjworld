@@ -30,6 +30,7 @@ define('CSAJAX_DEBUG', false);
 $valid_requests = array(
     'hk4e-api-os.mihoyo.com',
     'hk4e-api.mihoyo.com',
+    'bbs-api-os.mihoyo.com',
 );
 
 /**
@@ -76,6 +77,7 @@ if ('GET' == $request_method) {
 }
 
 $cs_decode = isset($_REQUEST['cs_decode']) ? $_REQUEST['cs_decode'] : false;
+$cs_cookie = isset($_REQUEST['cs_cookie']) ? $_REQUEST['cs_cookie'] : "";
 
 // Get URL from `csurl` in GET or POST data, before falling back to X-Proxy-URL header.
 if (isset($_REQUEST['csurl'])) {
@@ -144,6 +146,10 @@ if ($request_method == 'GET' && count($request_params) > 0) {
 // let the request begin
 $ch = curl_init($request_url);
 
+if (isset($cs_cookie)) {
+    array_push($request_headers, 'Cookie: ' . $cs_cookie);
+}
+
 // Suppress Expect header
 if (CSAJAX_SUPPRESS_EXPECT) {
     array_push($request_headers, 'Expect:');
@@ -169,6 +175,10 @@ if (is_array($curl_options) && 0 <= count($curl_options)) {
 
 // retrieve response (headers and content)
 $response = curl_exec($ch);
+if($response === false)
+{
+    csajax_debug_message('Curl error: ' . curl_error($ch));
+}
 curl_close($ch);
 
 // split response to header and content
