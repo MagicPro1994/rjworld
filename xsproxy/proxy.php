@@ -44,16 +44,26 @@ $curl_options = array(
     // CURLOPT_SSL_VERIFYHOST => 2,
 );
 
+$ignore_headers = array(
+    'Content-Length',
+    'Content-Type',
+);
+
 /* * * STOP EDITING HERE UNLESS YOU KNOW WHAT YOU ARE DOING * * */
 
 // identify request headers
 $request_headers = array();
+$bypass_headers = array();
 foreach ($_SERVER as $key => $value) {
     if (strpos($key, 'HTTP_') === 0 || strpos($key, 'CONTENT_') === 0) {
         $headername = str_replace('_', ' ', str_replace('HTTP_', '', $key));
         $headername = str_replace(' ', '-', ucwords(strtolower($headername)));
         if (!in_array($headername, array('Host', 'X-Proxy-Url'))) {
-            $request_headers[] = "$headername: $value";
+            if (!in_array($headername, $ignore_headers)) {
+                $request_headers[] = "$headername: $value";
+            } else {
+                $bypass_headers[$headername] = "$headername: $value";
+            }
         }
     }
 }
@@ -76,12 +86,45 @@ if ('GET' == $request_method) {
     $request_params = null;
 }
 
+$cs_url = isset($_REQUEST['cs_url']) ? $_REQUEST['cs_url'] : "";
 $cs_decode = isset($_REQUEST['cs_decode']) ? $_REQUEST['cs_decode'] : false;
 $cs_cookie = isset($_REQUEST['cs_cookie']) ? $_REQUEST['cs_cookie'] : "";
 
-// Get URL from `csurl` in GET or POST data, before falling back to X-Proxy-URL header.
-if (isset($_REQUEST['csurl'])) {
-    $request_url = $cs_decode ? urldecode($_REQUEST['csurl']) : $_REQUEST['csurl'];
+if (true == CSAJAX_DEBUG) {
+    var_dump("REQUEST PARAMS: ", $request_params);
+}
+
+// Custom request
+if ($request_method !== 'GET' && isJson($request_params) && !empty($request_params)) {
+    $cs_params = json_decode($request_params, true);
+    if (isset($cs_params['cs_url'])) {
+        $cs_url = $cs_params['cs_url'];
+        unset($cs_params['cs_url']);
+    }
+    if (isset($cs_params['cs_decode'])) {
+        $cs_decode = $cs_params['cs_decode'];
+        unset($cs_params['cs_decode']);
+    }
+    if (isset($cs_params['cs_cookie'])) {
+        $cs_cookie = $cs_params['cs_cookie'];
+        unset($cs_params['cs_cookie']);
+    }
+    if (isset($cs_params['cs_data'])) {
+        $cs_data = $cs_params['cs_data'];
+        unset($cs_params['cs_data']);
+    }
+}
+
+if (!isset($cs_data)) {
+    // Add back ignore headers when not custom request
+    foreach ($bypass_headers as $key => $value) {
+        $request_headers[] = $value;
+    }
+}
+
+// Get URL from `cs_url` in GET or POST data, before falling back to X-Proxy-URL header.
+if ($cs_url !== "") {
+    $request_url = $cs_decode ? urldecode($cs_url) : $cs_url;
 } elseif (isset($_SERVER['HTTP_X_PROXY_URL'])) {
     $request_url = $cs_decode ? urldecode($_SERVER['HTTP_X_PROXY_URL']) : $_SERVER['HTTP_X_PROXY_URL'];
 } else {
@@ -107,9 +150,9 @@ foreach ($p_query_url as $q_key => $q_value) {
 }
 
 if (is_array($request_params)) {
-    // csurl may exist in GET request methods
-    if (array_key_exists('csurl', $request_params)) {
-        unset($request_params['csurl']);
+    // cs_url may exist in GET request methods
+    if (array_key_exists('cs_url', $request_params)) {
+        unset($request_params['cs_url']);
     }
     // cs_encode may exist in GET request methods
     if (array_key_exists('cs_decode', $request_params)) {
@@ -123,7 +166,7 @@ if (is_array($request_params)) {
 
 // ignore requests for proxy :)
 if (preg_match('!' . $_SERVER['SCRIPT_NAME'] . '!', $request_url) || empty($request_url) || count($p_request_url) == 1) {
-    csajax_debug_message('Invalid request - make sure that csurl variable is not empty');
+    csajax_debug_message('Invalid request - make sure that cs_url variable is not empty');
     exit;
 }
 
@@ -143,15 +186,21 @@ if (CSAJAX_FILTERS) {
     }
 }
 
+csajax_debug_message("BEFORE APPEND QUERY REQUEST URL: " . $request_url . PHP_EOL);
+if (true == CSAJAX_DEBUG) {
+    var_dump("REQUEST PARAMS: ", $request_params);
+}
 // append query string for GET requests
 if ($request_method == 'GET' && count($request_params) > 0) {
     $request_url = $base_url . '?' . http_build_query($request_params);
 }
 
+csajax_debug_message("FINAL REQUEST URL: " . $request_url . PHP_EOL);
+
 // let the request begin
 $ch = curl_init($request_url);
 
-if (isset($cs_cookie)) {
+if ($cookie !== "") {
     array_push($request_headers, 'Cookie: ' . $cs_cookie);
 }
 
@@ -165,9 +214,20 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // return response
 curl_setopt($ch, CURLOPT_HEADER, true); // enabled response headers
 // add data for POST, PUT or DELETE requests
 if ('POST' == $request_method) {
-    $post_data = is_array($request_params) ? http_build_query($request_params) : $request_params;
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+    if (isset($cs_data)) {
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($cs_data));
+    } else {
+        $post_data = is_array($request_params) ? http_build_query($request_params) : $request_params;
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+    }
+    if (true == CSAJAX_DEBUG) {
+        print "isset " . isset($cs_data) . PHP_EOL;
+        var_dump("POST DATA: ", $post_data);
+        var_dump("CS DATA: ", $cs_data);
+        var_dump("HEADERS: ", $request_headers);
+    }
 } elseif ('PUT' == $request_method || 'DELETE' == $request_method) {
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $request_method);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $request_params);
@@ -180,8 +240,7 @@ if (is_array($curl_options) && 0 <= count($curl_options)) {
 
 // retrieve response (headers and content)
 $response = curl_exec($ch);
-if($response === false)
-{
+if ($response === false) {
     csajax_debug_message('Curl error: ' . curl_error($ch));
 }
 curl_close($ch);
@@ -195,7 +254,7 @@ foreach ($response_headers as $key => $response_header) {
     // Rewrite the `Location` header, so clients will also use the proxy for redirects.
     if (preg_match('/^Location:/', $response_header)) {
         list($header, $value) = preg_split('/: /', $response_header, 2);
-        $response_header = 'Location: ' . $_SERVER['REQUEST_URI'] . '?csurl=' . $value;
+        $response_header = 'Location: ' . $_SERVER['REQUEST_URI'] . '?cs_url=' . $value;
     }
     if (!preg_match('/^(Transfer-Encoding):/', $response_header)) {
         header($response_header, false);
@@ -203,11 +262,21 @@ foreach ($response_headers as $key => $response_header) {
 }
 
 // finally, output the content
-print($response_content);
+if (true == CSAJAX_DEBUG) {
+    print "RESPONSE CONTENT: " . PHP_EOL . $response_content;
+} else {
+    print($response_content);
+}
 
 function csajax_debug_message($message)
 {
     if (true == CSAJAX_DEBUG) {
         print $message . PHP_EOL;
     }
+}
+
+function isJson($string)
+{
+    json_decode($string);
+    return json_last_error() === JSON_ERROR_NONE;
 }
